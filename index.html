@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: #f2f2f2;
+    }
+
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      width: 90%;
+      max-width: 300px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 20px;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  
+  <div class="container">
+    <h1>Jhantu Quiz Competition </h1>
+    <h2>Enter Your Name</h2>
+    <input type="text" id="username" placeholder="Your Name" />
+    <br>
+    <button onclick="startQuiz()">Start Quiz</button>
+  </div>
+
+  <script>
+    function startQuiz() {
+      const name = document.getElementById("username").value.trim();
+      if (name) {
+        localStorage.setItem("quizUser", name);
+        localStorage.setItem("quizScore", 0); // score 0 se start
+        localStorage.setItem("quizIndex", 0); // question index 0
+        window.location.href = "quiz.html";
+      } else {
+        alert("Please enter your name!");
+      }
+    }
+  </script>
+</body>
+</html>
