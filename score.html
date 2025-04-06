@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>আপনার স্কোর</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="index.html">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .score-box {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 90%;
+      max-width: 450px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+
+    .score {
+      font-size: 24px;
+      color: #007bff;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 16px;
+      background: #28a745;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #218838;
+    }
+
+    .thank-you {
+      margin-top: 30px;
+      font-size: 16px;
+      color: #444;
+      line-height: 1.6;
+      text-align: center;
+    }
+
+    .thank-you strong {
+      color: #007bff;
+      font-size: 18px;
+    }
+
+    .leaderboard {
+      margin-top: 30px;
+      text-align: left;
+    }
+
+    .leaderboard h3 {
+      margin-bottom: 10px;
+      color: #333;
+    }
+
+    .leaderboard ul {
+      list-style: none;
+      padding: 0;
+      font-size: 16px;
+    }
+
+    .leaderboard li {
+      padding: 6px 10px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .winner {
+      font-weight: bold;
+      color: #28a745;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="score-box">
+    <h2>আপনার নাম: <span id="name">Loading...</span></h2>
+    <div class="score">আপনার স্কোর: <span id="score">0</span></div>
+    <a href="index.html"><button onclick="restartQuiz()">আবার শুরু করুন</button></a>
+    
+ <p class="thank-you" id="thankYouMessage">⏳ Loading...</p>
+
+    </div>
+
+    
+
+  <script>
+    const name = localStorage.getItem("quizUser");
+    const score = localStorage.getItem("quizScore");
+    const url = "https://script.google.com/macros/s/AKfycbwyYdYc5xC2VVU_FlVy-ROr_3dO1WdRJH4Rw82x1UU/dev";
+
+    // Show user info
+    document.getElementById("name").innerText = name || "Unknown";
+    document.getElementById("score").innerText = score || "0";
+    document.getElementById("thankYouMessage").innerHTML = `
+      🧡 ধন্যবাদ, <strong>${name}</strong>! আপনি এই কুইজে অংশগ্রহণ করেছেন<br>
+      আপনার স্কোর: <strong>${score}/20</strong><br><br>
+      আপনার বন্ধু,<br>
+      <strong>Jhantu Muriary</strong>
+    `;
+
+    // Send score to Google Sheet
+    fetch(url, {
+      method: "POST",
+      body: JSON.stringify({ name: name, score: score }),
+      headers: { "Content-Type": "application/json" }
+    });
+
+    // Get leaderboard
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+        data.shift(); // remove header row
+        data.sort((a, b) => b[1] - a[1]); // sort by score desc
+
+        const list = document.getElementById("leaderList");
+        list.innerHTML = "";
+
+        data.forEach((row, index) => {
+          const [n, s] = row;
+          const li = document.createElement("li");
+          li.innerHTML = `${index + 1}. ${n} — <strong>${s}</strong>`;
+          if (index === 0) li.classList.add("winner");
+          list.appendChild(li);
+        });
+      });
+
+    function restartQuiz() {
+      localStorage.removeItem("quizScore");
+      localStorage.removeItem("quizIndex");
+      window.location.href = "login.html";
+    }
+  </script>
+</body>
+</html>

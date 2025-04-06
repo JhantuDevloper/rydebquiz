@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+
+    .question-box {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 500px;
+      margin: auto;
+    }
+
+    h2 {
+      font-size: 20px;
+    }
+
+    .option {
+      background: #eee;
+      padding: 12px;
+      border-radius: 8px;
+      margin: 10px 0;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .option:hover {
+      background: #ddd;
+    }
+
+    .correct {
+      background-color: #c8f7c5 !important; /* Green */
+    }
+
+    .wrong {
+      background-color: #f7c5c5 !important; /* Red */
+    }
+
+    .next-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #007bff;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .next-btn:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+<div class="question-box">
+  <h2 id="question">প্রশ্ন লোড হচ্ছে...</h2>
+  <div id="options"></div>
+  <button class="next-btn" onclick="nextQuestion()" disabled>পরবর্তী প্রশ্ন</button>
+</div>
+
+<script>
+  const questions = [
+    {
+      question: "বাংলাদেশের রাজধানী কোথায়?",
+      options: ["চট্টগ্রাম", "ঢাকা", "খুলনা", "রাজশাহী"],
+      correct: 1
+    },
+    {
+      question: "৫ + ৫ = ?",
+      options: ["৮", "৯", "১০", "১১"],
+      correct: 2
+    },
+    {
+      question: "সবচেয়ে বড় মহাসাগর কোনটি?",
+      options: ["আটলান্টিক", "প্যাসিফিক", "আর্কটিক", "ভারত মহাসাগর"],
+      correct: 1
+    }
+    // এখানে আরও প্রশ্ন যোগ করা যাবে
+  ];
+
+  let currentIndex = parseInt(localStorage.getItem("quizIndex")) || 0;
+  let score = parseInt(localStorage.getItem("quizScore")) || 0;
+
+  const questionEl = document.getElementById("question");
+  const optionsEl = document.getElementById("options");
+  const nextBtn = document.querySelector(".next-btn");
+
+  function loadQuestion() {
+    const q = questions[currentIndex];
+    questionEl.innerText = `${currentIndex + 1}. ${q.question}`;
+    optionsEl.innerHTML = "";
+    nextBtn.disabled = true;
+
+    q.options.forEach((option, i) => {
+      const btn = document.createElement("div");
+      btn.className = "option";
+      btn.innerText = option;
+      btn.onclick = () => handleAnswer(i, btn);
+      optionsEl.appendChild(btn);
+    });
+  }
+
+  function handleAnswer(selected, btn) {
+    const q = questions[currentIndex];
+    const allOptions = document.querySelectorAll(".option");
+    
+    allOptions.forEach(opt => opt.onclick = null); // disable click
+    if (selected === q.correct) {
+      btn.classList.add("correct");
+      score++;
+      localStorage.setItem("quizScore", score);
+    } else {
+      btn.classList.add("wrong");
+      allOptions[q.correct].classList.add("correct");
+    }
+
+    nextBtn.disabled = false;
+  }
+
+  function nextQuestion() {
+    currentIndex++;
+    if (currentIndex < questions.length) {
+      localStorage.setItem("quizIndex", currentIndex);
+      loadQuestion();
+    } else {
+      localStorage.removeItem("quizIndex");
+      window.location.href = "score.html";
+    }
+  }
+
+  // Load first question
+  loadQuestion();
+</script>
+
+</body>
+</html>
